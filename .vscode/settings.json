@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "./.venv/lib/python3.13/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "./.venv/lib/python3.13/site-packages"
+    ],
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ],
+    "files.exclude": {
+        "**/.gitignore": false
+    }
+}
