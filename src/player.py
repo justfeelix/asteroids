@@ -1,6 +1,6 @@
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_LIVES, PLAYER_RADIUS, LINE_WIDTH, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOOT_SPEED, PLAYER_SPEED, PLAYER_TURN_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import PLAYER_BRAKE_POWER, PLAYER_LIVES, PLAYER_MAX_SPEED, PLAYER_RADIUS, LINE_WIDTH, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOOT_SPEED, PLAYER_SPEED, PLAYER_THRUST, PLAYER_TURN_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH
 from shot import Shot
 
 
@@ -35,6 +35,7 @@ class Player(CircleShape):
         self.rotation += PLAYER_TURN_SPEED * dt
 
     def update(self, dt: float) -> None:
+        self.position += self.velocity * dt
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rotate(-dt)
@@ -43,7 +44,7 @@ class Player(CircleShape):
         if keys[pygame.K_UP]:
             self.move(dt)
         if keys[pygame.K_DOWN]:
-            self.move(-dt)
+            self.brake(dt)
         if keys[pygame.K_SPACE]:
             self.shoot()
         self.shot_cooldown -= dt
@@ -52,7 +53,11 @@ class Player(CircleShape):
 
     def move(self, dt: float) -> None:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        self.position += forward * dt * PLAYER_SPEED
+        self.velocity += forward * dt * PLAYER_THRUST
+        self.velocity = self.velocity.clamp_magnitude(PLAYER_MAX_SPEED)
+
+    def brake(self, dt: float) -> None:
+        self.velocity = self.velocity.move_towards(pygame.Vector2(0, 0), PLAYER_BRAKE_POWER * dt)
 
     def shoot(self) -> "Shot":
         if self.shot_cooldown > 0:
