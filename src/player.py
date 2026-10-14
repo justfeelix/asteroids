@@ -1,6 +1,6 @@
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOOT_SPEED, PLAYER_SPEED, PLAYER_TURN_SPEED
+from constants import PLAYER_LIVES, PLAYER_RADIUS, LINE_WIDTH, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOOT_SPEED, PLAYER_SPEED, PLAYER_TURN_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH
 from shot import Shot
 
 
@@ -9,6 +9,9 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0.0  # in degrees
         self.shot_cooldown = 0.0  # in seconds
+        self.score = 0  # Initialize score to zero
+        self.score_text = pygame.font.Font(None, 36)
+        self.lives = PLAYER_LIVES  # Initialize lives to 3
 
     def triangle(self) -> list[pygame.Vector2]:
 
@@ -22,6 +25,11 @@ class Player(CircleShape):
     def draw(self, screen: pygame.Surface) -> None:
         points = self.triangle()
         pygame.draw.polygon(screen, "white", points, LINE_WIDTH)
+        score_text = self.score_text.render(f"Score: {self.score}", True, (255, 255, 255))
+        lives_text = self.score_text.render(f"Lives: {self.lives}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+        screen.blit(lives_text, (10, 50))
+
 
     def rotate(self, dt: float) -> None:
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -54,3 +62,17 @@ class Player(CircleShape):
             shot = Shot(self.position.x, self.position.y)
             shot.velocity = forward * PLAYER_SHOOT_SPEED
             return shot
+
+    def add_score(self, points: int) -> None:
+        self.score += points
+
+    def get_score(self) -> int:
+        return self.score
+    def get_lives(self) -> int:
+        return self.lives
+
+    def reset(self) -> None:
+        self.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        self.rotation = 0.0
+        self.shot_cooldown = 0.0
+        self.lives -= 1

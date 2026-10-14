@@ -1,7 +1,7 @@
 import sys
 
 import pygame 
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import POINTS_PER_ASTEROID, SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_state, log_event
 from player import Player
 from asteroid import Asteroid
@@ -39,13 +39,22 @@ def main():
         for asteroid in asteroids:
             if asteroid.collides_with(player1):
                 log_event("player_hit")
-                print("Game over!")
-                sys.exit()
+                player1.reset()
+                if player1.get_lives() <= 0:
+                    print("Game over!")
+                    print(f"Final score: {player1.get_score()}")
+                    sys.exit()
+                for asteroid in asteroids:
+                    asteroid.kill()
+                break
+
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
-                    asteroid.split()
+                    asteroide_type = asteroid.split()
+                    player1.add_score(POINTS_PER_ASTEROID*asteroide_type.value)
                     shot.kill()
+                    break
         for sprite in drawable:
             sprite.draw(screen)
         pygame.display.flip()

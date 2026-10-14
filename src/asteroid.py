@@ -3,6 +3,13 @@ import pygame
 from constants import LINE_WIDTH, ASTEROID_MIN_RADIUS
 import logger
 import random
+import enum
+
+class AsteroidKind(enum.Enum):
+    SMALL = 4
+    MEDIUM = 2
+    LARGE = 1
+
 
 class Asteroid(CircleShape):
     def __init__(self, x: float, y: float, radius: float) -> None:
@@ -17,7 +24,18 @@ class Asteroid(CircleShape):
     def split(self) -> None:
         self.kill()
         if self.radius <= ASTEROID_MIN_RADIUS:
-            return
+            return AsteroidKind.SMALL
+        elif self.radius <= ASTEROID_MIN_RADIUS * 2:
+            logger.log_event("asteroid_split")
+            angle = random.uniform(20,50)
+            new_velocity1 = self.velocity.rotate(angle)
+            new_velocity2 = self.velocity.rotate(-angle)
+            new_radius = self.radius / 2
+            asteroid1 = Asteroid(self.position.x, self.position.y, new_radius)
+            asteroid2 = Asteroid(self.position.x, self.position.y, new_radius)
+            asteroid1.velocity = new_velocity1 * 1.2
+            asteroid2.velocity = new_velocity2 * 1.2
+            return AsteroidKind.MEDIUM
         else:
             logger.log_event("asteroid_split")
             angle = random.uniform(20,50)
@@ -28,4 +46,5 @@ class Asteroid(CircleShape):
             asteroid2 = Asteroid(self.position.x, self.position.y, new_radius)
             asteroid1.velocity = new_velocity1 * 1.2
             asteroid2.velocity = new_velocity2 * 1.2
+            return AsteroidKind.LARGE
         
