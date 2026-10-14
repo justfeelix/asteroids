@@ -1,4 +1,5 @@
 import sys
+import random
 
 import pygame 
 from constants import POINTS_PER_ASTEROID, SCREEN_HEIGHT, SCREEN_WIDTH
@@ -7,6 +8,8 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from particle import Particle
+
 
 def main():
     print(f"Starting Asteroids Game with Pygame version {pygame.version.ver}")
@@ -19,11 +22,13 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
+    particles = pygame.sprite.Group()
 
     Player.containers = (updatable, drawable)
     Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = (updatable)
     Shot.containers = (updatable, drawable, shots)
+    Particle.containers = (updatable, drawable, particles)
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     player1 = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -50,6 +55,9 @@ def main():
 
             for shot in shots:
                 if asteroid.collides_with(shot):
+                    for _ in range(10):
+                        new_particle = Particle(asteroid.position.x, asteroid.position.y, 2)
+                        new_particle.velocity = pygame.Vector2(0, 1).rotate(random.uniform(0, 360)) * random.uniform(50, 150)
                     log_event("asteroid_shot")
                     asteroide_type = asteroid.split()
                     player1.add_score(POINTS_PER_ASTEROID*asteroide_type.value)
