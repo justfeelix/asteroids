@@ -47,6 +47,7 @@ class Player(CircleShape):
         if keys[pygame.K_SPACE]:
             self.shoot()
         self.shot_cooldown -= dt
+        self.wrap_position(SCREEN_WIDTH, SCREEN_HEIGHT)
         
 
     def move(self, dt: float) -> None:

@@ -44,8 +44,8 @@ def main():
                     print("Game over!")
                     print(f"Final score: {player1.get_score()}")
                     sys.exit()
-                for asteroid in asteroids:
-                    asteroid.kill()
+                for a in asteroids:
+                    a.kill()
                 break
 
             for shot in shots:
